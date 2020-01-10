@@ -25,13 +25,9 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"dohc/config"
 	"dohc/selector"
-	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net"
@@ -246,26 +242,26 @@ func (c *Client) newHTTPClient() error {
 
 
 	//bb
-	localCertFile := "/userdisk/data/work/fullchain.pem"
-	insecure := flag.Bool("insecure-ssl", false, "Accept/Ignore all server SSL certificates")
-	flag.Parse()
-
-	// Get the SystemCertPool, continue with an empty pool on error
-	rootCAs, _ := x509.SystemCertPool()
-	if rootCAs == nil {
-		rootCAs = x509.NewCertPool()
-	}
-
-	// Read in the cert file
-	certs, err := ioutil.ReadFile(localCertFile)
-	if err != nil {
-		log.Fatalf("Failed to append %q to RootCAs: %v", localCertFile, err)
-	}
-
-	// Append our cert to the system pool
-	if ok := rootCAs.AppendCertsFromPEM(certs); !ok {
-		log.Println("No certs appended, using system certs only")
-	}
+	//localCertFile := "/userdisk/data/work/fullchain.pem"
+	//insecure := flag.Bool("insecure-ssl", false, "Accept/Ignore all server SSL certificates")
+	//flag.Parse()
+	//
+	//// Get the SystemCertPool, continue with an empty pool on error
+	//rootCAs, _ := x509.SystemCertPool()
+	//if rootCAs == nil {
+	//	rootCAs = x509.NewCertPool()
+	//}
+	//
+	//// Read in the cert file
+	//certs, err := ioutil.ReadFile(localCertFile)
+	//if err != nil {
+	//	log.Fatalf("Failed to append %q to RootCAs: %v", localCertFile, err)
+	//}
+	//
+	//// Append our cert to the system pool
+	//if ok := rootCAs.AppendCertsFromPEM(certs); !ok {
+	//	log.Println("No certs appended, using system certs only")
+	//}
 
 
 	c.httpTransport = &http.Transport{
@@ -276,9 +272,9 @@ func (c *Client) newHTTPClient() error {
 		MaxIdleConnsPerHost:   10,
 		Proxy:                 http.ProxyFromEnvironment,
 		TLSHandshakeTimeout:   time.Duration(c.conf.Other.Timeout) * time.Second,
-		TLSClientConfig: 	   &tls.Config{
-			InsecureSkipVerify: *insecure,
-			RootCAs:            rootCAs},
+		//TLSClientConfig: 	   &tls.Config{
+		//	InsecureSkipVerify: *insecure,
+		//	RootCAs:            rootCAs},
 	}
 
 
@@ -290,7 +286,7 @@ func (c *Client) newHTTPClient() error {
 			return dialer.DialContext(ctx, network, address)
 		}
 	}
-	err = http2.ConfigureTransport(c.httpTransport)
+	err := http2.ConfigureTransport(c.httpTransport)
 	if err != nil {
 		return err
 	}
