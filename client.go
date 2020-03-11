@@ -25,6 +25,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"dohc/config"
 	"dohc/selector"
 	"fmt"
@@ -272,8 +273,8 @@ func (c *Client) newHTTPClient() error {
 		MaxIdleConnsPerHost:   10,
 		Proxy:                 http.ProxyFromEnvironment,
 		TLSHandshakeTimeout:   time.Duration(c.conf.Other.Timeout) * time.Second,
-		//TLSClientConfig: 	   &tls.Config{
-		//	InsecureSkipVerify: *insecure,
+		TLSClientConfig: 	   &tls.Config{
+			InsecureSkipVerify: true},
 		//	RootCAs:            rootCAs},
 	}
 
